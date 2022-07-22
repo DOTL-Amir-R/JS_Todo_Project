@@ -1,0 +1,29 @@
+.list-item{
+    color:red;
+}
+.body{
+    max-width: 1360px;
+    overflow-x: hidden;
+}
+.sidebar-alert{
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    right: 0%;
+    width: 50%;
+    transition:all 1.5s ;
+    padding: 1rem;
+    border-radius: .5rem;
+}
+.off{
+    right: -100%;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    transition:all 1.5s ;
+    width: 50%;
+    padding: 1rem;
+    border-radius: .5rem;
+}
