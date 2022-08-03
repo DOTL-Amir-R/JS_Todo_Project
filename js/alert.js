@@ -1,21 +1,30 @@
-const sideBarAlert = document.getElementById('sidebar-alert');
-const closeButton = document.getElementById('close');
-
+ const sideBarAlert = document.getElementById('sidebar-alert');
+ const closeButton = document.getElementById('close');
+ const todoTitle = document.getElementById('title');
 // if there is no title we should say error
-function alertCloseButton(){
-    sideBarAlert.setAttribute('class' , 'off')
-}
-function alertSideBar(mesg){
-    sideBarAlert.innerHTML = mesg + closeButton.innerHTML;
-    if(!todoTitle.value){
-        sideBarAlert.setAttribute('class' , 'sidebar-alert');
-        
-    }
-}
+export function alertCloseButton(){
+    sideBarAlert.style.right = '-100%'
+};
+export function alertSideBar(mesg,type){
+    switch(type){
+        case 'green':
+            sideBarAlert.style.backgroundColor = 'green';
+            break;
+        case 'red':
+            sideBarAlert.style.backgroundColor = 'red';
+            break;
+        case 'yellow':
+            sideBarAlert.style.backgroundColor = 'yellow';
+            break;
+        default:
+        sideBarAlert.style.backgroundColor  = 'black';
+            break;
 
-export function closeButtonTwo(){
-    alertCloseButton()
-}
-export function alertSide(){
-    alertSideBar('mesg')
-}
+    };
+    sideBarAlert.innerHTML = mesg 
+    sideBarAlert.appendChild(closeButton)
+    if(!todoTitle.value){
+        sideBarAlert.style.right = '0%'
+    };
+    setTimeout(alertCloseButton , 3000);
+};
