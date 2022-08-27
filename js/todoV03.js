@@ -12,10 +12,12 @@ const containerToDo = document.getElementById('todo-box');
 // let isFocused = true
 containerToDo.style.display = 'flex';
 containerToDo.style.flexDirection = 'column';
-
-const localSavedTodo = localStorage.getItem('todoList');
-const parseOfTodoList= JSON.parse(localSavedTodo) || [];
-let saveAllTodo = [...parseOfTodoList];
+function getLocalStorageTodoData(){
+    const localSavedTodo = localStorage.getItem('todoList');
+    const  parseOfTodoList= JSON.parse(localSavedTodo)?.sort((a,b)=>a.id - b.id) || [];
+    return parseOfTodoList
+};
+let saveAllTodo = [...getLocalStorageTodoData()];
 
 
 const createNewTodo = (titleTodo , descTodo , idTodo , checkTodo)=>{
@@ -77,9 +79,13 @@ todoDescInput.defaultValue = descTodo;
 
 
 }
-saveAllTodo.forEach((todo)=>{
-createNewTodo(todo.title , todo.desc , todo.id , todo.check);
-})
+function renderNewTodoData(){
+    getLocalStorageTodoData().forEach((todo)=>{
+        createNewTodo(todo.title , todo.desc , todo.id , todo.check);
+    })
+}
+renderNewTodoData()
+
 // after we got our tags we should take out the value of our text area and title then save it into new object
 
 function todofunction(event){
@@ -93,10 +99,12 @@ function todofunction(event){
         desc: todoTextBox.value,
         check:false,
     };
+    saveAllTodo = [...getLocalStorageTodoData()];
     // this is to storage all todos everytime we make them into one object
         saveAllTodo.push(todoObject);
     // now we save this object of all todos into local storage
         localStorage.setItem('todoList',JSON.stringify(saveAllTodo));
+
     createNewTodo(todoObject.title , todoObject.desc , todoObject.id ,todoObject.check);
 
 
@@ -118,12 +126,13 @@ todoMainList.addEventListener('click', (edit)=>{
         const descValueEdited = editLi.children[1].children[0].value;
         const idOfEditedValue = editLi.id
 
-        const filteredTodo = saveAllTodo.filter((itemEdited)=>itemEdited.id === Number(idOfEditedValue));
+        const filteredTodo = getLocalStorageTodoData().filter((itemEdited)=>itemEdited.id === Number(idOfEditedValue));
         const updateTitleEditedTodo = { ...filteredTodo[0] , title: titleValueEdited, desc: descValueEdited };
-        const deleteIdFromLocalStorage = saveAllTodo.filter((itemEdited)=>itemEdited.id  !== Number(idOfEditedValue));
+        const deleteIdFromLocalStorage = getLocalStorageTodoData().filter((itemEdited)=>itemEdited.id  !== Number(idOfEditedValue));
         const updatedEditedTodoTitleAndDesc = [...deleteIdFromLocalStorage , updateTitleEditedTodo]
         localStorage.setItem('todoList', JSON.stringify(updatedEditedTodoTitleAndDesc));
-        location.reload();
+        todoMainList.innerHTML ="";
+        renderNewTodoData();
         })
     };
 });
@@ -131,32 +140,36 @@ todoMainList.addEventListener('click', (check)=>{
     if(check.target.innerText === 'Uncheck' ){
 
         const checkId = check.target.parentElement;
-        const filteredTodo = saveAllTodo.filter((item)=>
+        const filteredTodo = getLocalStorageTodoData().filter((item)=>
             item.id === Number(checkId.id)
          );
         filteredTodo[0].check = true
     
-        const updateFilterTodo = saveAllTodo.filter((item)=>
+        const updateFilterTodo = getLocalStorageTodoData().filter((item)=>
         item.id !== Number(checkId.id)
         );
     
         const checkTodo = [...updateFilterTodo , ...filteredTodo];
         console.log(checkTodo);
         localStorage.setItem('todoList', JSON.stringify(checkTodo));
+        todoMainList.innerHTML ="";
+        renderNewTodoData();
     }else if(check.target.innerText === 'Check'){
         const checkId = check.target.parentElement;
-        const filteredTodo = saveAllTodo.filter((item)=>
+        const filteredTodo = getLocalStorageTodoData().filter((item)=>
             item.id === Number(checkId.id)
         );
         filteredTodo[0].check = false
 
-        const updateFilterTodo = saveAllTodo.filter((item)=>
+        const updateFilterTodo = getLocalStorageTodoData().filter((item)=>
         item.id !== Number(checkId.id)
         );
 
         const checkTodo = [...updateFilterTodo , ...filteredTodo];
         console.log(checkTodo);
         localStorage.setItem('todoList', JSON.stringify(checkTodo));
+        todoMainList.innerHTML ="";
+        renderNewTodoData();
     }
 });
 // todoMainList.addEventListener('click', (edit)=>{
@@ -198,15 +211,15 @@ todoMainList.addEventListener('click', (e)=>{
         //
         //
         const todoLi = e.target.parentElement
-        todoLi.remove()
 
-        const filteredTodo = saveAllTodo.filter(
+
+        const filteredTodo = getLocalStorageTodoData().filter(
             (item) => item.id !== Number(todoLi.id) 
         );
-        console.log(filteredTodo)
-        saveAllTodo=filteredTodo
-        localStorage.setItem('todoList', JSON.stringify(saveAllTodo));
-
+        // saveAllTodo=filteredTodo
+        localStorage.setItem('todoList', JSON.stringify(filteredTodo));
+        todoMainList.innerHTML ="";
+        renderNewTodoData();
     }   
 } );
 // // you cant save arraies in localstorage like this : localStorage.setItem('name',[1,2,3,4]); this wont be saved as array in localStorage
@@ -246,3 +259,5 @@ todoMainList.addEventListener('click', (e)=>{
 // const filteredItems = arrayTest.filter((item)=> item !== 300);
 // //this (!==) wants to say if item isnt equal to this number(300) you can save it into the filterItems
 // console.log(filteredItems);
+//arr.sort() we will use this for sorting data
+//arr.sort((a,b)=>a-b) we will use this for numbers
